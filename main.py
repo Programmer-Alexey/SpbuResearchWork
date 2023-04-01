@@ -42,6 +42,7 @@ mean = 5
 std = 2
 
 for i in range(6):  # Демонстрация работы
+    print("hello")
     norm_ptr = init_normal(mean, std, n)
     fill(norm_ptr)
 
