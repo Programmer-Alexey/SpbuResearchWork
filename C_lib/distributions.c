@@ -25,17 +25,17 @@ double normal_distribution(double mu, double sigma, normal *st) {
     st->second = (st->second + 1) % 2;
     switch (st->second) {
         case 0:
-            while (1) {
-                st->u = (double) (-10000 + rand() % 20000) / 10000.0;
-                st->v = (double) (-10000 + rand() % 20000) / 10000.0;
+            do {
+                st->u = 2.0 * ((double) rand() / RAND_MAX) - 1.0;
+                st->v = 2.0 * ((double) rand() / RAND_MAX) - 1.0;
                 st->s = st->u * st->u + st->v * st->v;
-                if (st->s > 1 || st->s == 0) continue;
 
-                st->u = st->u * sqrt(-2 * log(st->s) / st->s);
-                st->v = st->v * sqrt(-2 * log(st->s) / st->s);
+            } while (st->s >= 1.0 || st->s == 0.0);
 
-                return mu + sigma * st->u;
-            }
+            st->u = st->u * sqrt(-2.0 * log(st->s) / st->s);
+            st->v = st->v * sqrt(-2.0 * log(st->s) / st->s);
+
+            return mu + sigma * st->u;
 
         case 1:
             return mu + sigma * st->v;

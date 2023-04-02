@@ -37,14 +37,47 @@ def plt_print(coord_y="F(x)", title="Empirical Distribution Function"):
     plt.show()
 
 
-n = 1000
+def print_density(sample):
+    mu = np.mean(sample)
+    sigma = np.std(sample)
+
+    x = np.linspace(mu - 3 * sigma, mu + 3 * sigma, 100)
+    y = 1 / (sigma * np.sqrt(2 * np.pi)) * np.exp(-(x - mu) ** 2 / (2 * sigma ** 2))
+
+    plt.plot(x, y, label='Плотность распределения')
+    plt.hist(sample, density=True, bins=20, alpha=0.5, label='Выборка')
+    plt.legend()
+    plt.show()
+
+
+def print_mixture_density(func):
+    x = np.linspace(-5, 10, 1000)
+
+    plt.plot(x, np.vectorize(func)(x), label='Mixture Density')
+
+    plt.xlabel('x')
+    plt.ylabel('Density')
+    plt.title('Mixture Density of Two Normal Distributions')
+
+    plt.legend()
+    plt.show()
+
+
+n = 10000
 mean = 5
 std = 2
 
 for i in range(6):  # Демонстрация работы
-    norm_ptr = init_normal(mean, std, n)
-    fill(norm_ptr)
+    norm_ptr1 = init_normal(mean, std, n)
+    fill(norm_ptr1)
+    density1 = NormalDensity(mean=mean, std=std)
+    norm1 = np.array(norm_ptr1.contents.values[:n])
 
-    norm = np.array(norm_ptr.contents.values[:n])
+    norm_ptr2 = init_normal(0, 1, n)
+    fill(norm_ptr2)
+    density2 = NormalDensity()
+    norm2 = np.array(norm_ptr2.contents.values[:n])
 
-    print_hist(norm)
+    mix = Mixture([density1.func, 0.5], [density2.func, 0.5])
+    mixture = mix.mixture
+    print_mixture_density(mixture)

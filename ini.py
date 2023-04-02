@@ -1,4 +1,5 @@
 import ctypes
+from math import exp, pi
 
 
 # Структура, где хранятся все данные о (нормальном) распределении
@@ -10,7 +11,28 @@ class Normal(ctypes.Structure):
                 ("v", ctypes.c_double),
                 ("s", ctypes.c_double),
                 ("n", ctypes.c_int),
-                ("values", ctypes.POINTER(ctypes.c_double))] # Значения
+                ("values", ctypes.POINTER(ctypes.c_double))]  # Значения
+
+
+class NormalDensity:
+    def __init__(self, mean=0, std=1):
+        self.mean = mean
+        self.std = std
+
+    def func(self, x):
+        return 1 / (exp(((x - self.mean) / self.std) ** 2 / 2) * (2 * pi) ** 0.5 * self.std)
+
+
+class Mixture:
+    def __init__(self, *args):
+        self.args = args
+
+    def mixture(self, x):
+        s = 0
+        for pair in self.args:
+            f, w = pair
+            s += w * f(x)
+        return s
 
 
 def normal_distribution(mu, sigma, s_ptr):
