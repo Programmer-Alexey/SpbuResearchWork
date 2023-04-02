@@ -9,6 +9,7 @@ void fill(normal *s) {
 
 
 normal *init_normal(double mu, double sigma, int n) {
+    srand(time(NULL));
     normal *s = (normal *) malloc(sizeof(normal));
     s->second = 1;
     s->mu = mu;
