@@ -51,7 +51,7 @@ def print_density(sample):
     plt.show()
 
 
-# Плотность смеси и гистограмма двух выборок
+# Плотность смеси с гистограммой двух выборок
 def print_mixture_density(func, arrays):
     x = np.linspace(-5, 10, 1000)
 
