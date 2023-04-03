@@ -37,6 +37,7 @@ def plt_print(coord_y="F(x)", title="Empirical Distribution Function"):
     plt.show()
 
 
+# Плотность по выборке
 def print_density(sample):
     mu = np.mean(sample)
     sigma = np.std(sample)
@@ -50,10 +51,12 @@ def print_density(sample):
     plt.show()
 
 
-def print_mixture_density(func):
+# Плотность смеси и гистограмма двух выборок
+def print_mixture_density(func, arrays):
     x = np.linspace(-5, 10, 1000)
 
     plt.plot(x, np.vectorize(func)(x), label='Mixture Density')
+    plt.hist(np.concatenate(arrays), bins=50, density=True, label="Mixture Histogram")
 
     plt.xlabel('x')
     plt.ylabel('Density')
@@ -66,18 +69,25 @@ def print_mixture_density(func):
 n = 10000
 mean = 5
 std = 2
+weights = [0.5, 0.5]
 
-for i in range(6):  # Демонстрация работы
+for i in range(1):
+    # Генерация первой выборки и функции плотности
     norm_ptr1 = init_normal(mean, std, n)
     fill(norm_ptr1)
-    density1 = NormalDensity(mean=mean, std=std)
     norm1 = np.array(norm_ptr1.contents.values[:n])
 
+    density1 = NormalDensity(mean=mean, std=std)
+
+    # Вторая выборка
     norm_ptr2 = init_normal(0, 1, n)
     fill(norm_ptr2)
-    density2 = NormalDensity()
     norm2 = np.array(norm_ptr2.contents.values[:n])
 
-    mix = Mixture([density1.func, 0.5], [density2.func, 0.5])
-    mixture = mix.mixture
-    print_mixture_density(mixture)
+    # Её плотность (по умолчанию mean=0, std=1)
+    density2 = NormalDensity()
+
+    mix = Mixture([density1.func, weights[0]], [density2.func, weights[1]])
+    mixture = mix.function
+
+    print_mixture_density(mixture, (norm1, norm2))
