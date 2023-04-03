@@ -14,6 +14,7 @@ class Normal(ctypes.Structure):
                 ("values", ctypes.POINTER(ctypes.c_double))]  # Значения
 
 
+# Обертка для функции плотности
 class NormalDensity:
     def __init__(self, mean=0, std=1):
         self.mean = mean
@@ -24,10 +25,14 @@ class NormalDensity:
 
 
 class Mixture:
+    """
+        Вход: Функция плотности произвольного распределения и ее вес
+        Выход: Функция смеси
+    """
     def __init__(self, *args):
         self.args = args
 
-    def mixture(self, x):
+    def function(self, x):
         s = 0
         for pair in self.args:
             f, w = pair
