@@ -1,4 +1,5 @@
 import ctypes
+import numpy as np
 from math import exp, pi
 
 
@@ -12,6 +13,30 @@ class Normal(ctypes.Structure):
                 ("s", ctypes.c_double),
                 ("n", ctypes.c_int),
                 ("values", ctypes.POINTER(ctypes.c_double))]  # Значения
+
+
+class NormalDistribution:
+
+    def __init__(self, mu, sigma, n):
+        self.mu = mu
+        self.sigma = sigma
+        self.n = n
+        self.ind = 0
+        self.ptr = init_normal(mu, sigma, n)
+        fill(self.ptr)
+
+    def data(self, is_list=False):
+        if is_list:
+            return self.ptr.contents.values[:self.n]
+        return np.array(self.ptr.contents.values[:self.n])
+
+    def generate(self):
+        if self.ind < self.n:
+            self.ind += 1
+        else:
+            fill(self.ptr)
+            self.ind = 1
+        return self.ptr.contents.values[:self.n][self.ind - 1]
 
 
 # Обертка для функции плотности
@@ -29,11 +54,13 @@ class Mixture:
         Вход: Функция плотности произвольного распределения и ее вес
         Выход: Функция смеси
     """
+
     def __init__(self, *args):
         self.args = args
 
     def function(self, x):
         s = 0
+
         for pair in self.args:
             f, w = pair
             s += w * f(x)
