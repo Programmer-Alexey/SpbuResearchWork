@@ -38,15 +38,8 @@ class NormalDistribution:
             self.ind = 1
         return self.ptr.contents.values[:self.n][self.ind - 1]
 
-
-# Обертка для функции плотности
-class NormalDensity:
-    def __init__(self, mean=0, std=1):
-        self.mean = mean
-        self.std = std
-
-    def func(self, x):
-        return 1 / (exp(((x - self.mean) / self.std) ** 2 / 2) * (2 * pi) ** 0.5 * self.std)
+    def density(self, x):
+        return 1 / (exp(((x - self.mu) / self.sigma) ** 2 / 2) * (2 * pi) ** 0.5 * self.sigma)
 
 
 class Mixture:

@@ -1,6 +1,33 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
+class RandomGenerator:
+    def __init__(self, weights):
+        from bisect import bisect_left
+        from random import random
+
+        self.weights = weights
+        s = sum(weights)
+        for ind in range(len(weights)):
+            self.weights[ind] /= s
+
+        self.index_map = []
+        self.values = list(range(len(weights)))
+        self.s = 0
+
+        self.bisect_left = bisect_left
+        self.random = random
+
+        for p in weights:
+            self.s += p
+            self.index_map.append(self.s)
+
+    def generate(self):
+        probability = self.random()
+        index = self.bisect_left(self.index_map, probability)
+
+        return self.values[index]
+"""
 def print_hist(mas: np.array, mean, std, den=True):  # Выводит гистограмму плотности либо функции
     plt.style.use('ggplot')
 
@@ -12,7 +39,7 @@ def print_hist(mas: np.array, mean, std, den=True):  # Выводит гисто
 
     plt.plot(bin_centers, density, label='Normal Distribution')
     plt_print(coord_y="Density", title="Empirical Density Function")
-
+"""
 
 def print_distribution(mas: np.array):  # Только функция распределения
     plt.style.use('ggplot')
@@ -50,15 +77,19 @@ def print_density(sample):
 
 
 # Плотность смеси с гистограммой двух выборок
-def print_mixture_density(func, arrays):
-    x = np.linspace(-5, 20, 1000)
+def print_mixture_density(func, arrays, weights, left, right):
+    rgen = RandomGenerator(weights)
+    n = len(arrays[0])
+
+
+    x = np.linspace(left, right, 1000)
 
     plt.plot(x, np.vectorize(func)(x), label='Mixture Density')
-    plt.hist(np.concatenate(arrays), bins=50, density=True, label="Mixture Histogram")
+    plt.hist(np.array([arrays[rgen.generate()][i] for i in range(n)]), bins=50, density=True, label="Mixture Histogram")
 
     plt.xlabel('x')
     plt.ylabel('Density')
-    plt.title('Mixture Density of Two Normal Distributions')
+    plt.title('Mixture Density of n Normal Distributions')
 
     plt.legend()
     plt.show()
