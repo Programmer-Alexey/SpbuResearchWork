@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
+
 class RandomGenerator:
     def __init__(self, weights):
         from bisect import bisect_left
@@ -27,6 +28,8 @@ class RandomGenerator:
         index = self.bisect_left(self.index_map, probability)
 
         return self.values[index]
+
+
 """
 def print_hist(mas: np.array, mean, std, den=True):  # Выводит гистограмму плотности либо функции
     plt.style.use('ggplot')
@@ -40,6 +43,7 @@ def print_hist(mas: np.array, mean, std, den=True):  # Выводит гисто
     plt.plot(bin_centers, density, label='Normal Distribution')
     plt_print(coord_y="Density", title="Empirical Density Function")
 """
+
 
 def print_distribution(mas: np.array):  # Только функция распределения
     plt.style.use('ggplot')
@@ -80,7 +84,6 @@ def print_density(sample):
 def print_mixture_density(func, arrays, weights, left, right):
     rgen = RandomGenerator(weights)
     n = len(arrays[0])
-
 
     x = np.linspace(left, right, 1000)
 

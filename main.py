@@ -16,7 +16,6 @@ left = means[l_ind] - 3 * stds[l_ind] - 1
 r_ind = means.index(max(means))
 right = means[r_ind] + 3 * stds[r_ind] + 1
 
-
 for i in range(1):
     for j in range(k):
         distributions.append(NormalDistribution(means[j], stds[j], n))
