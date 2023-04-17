@@ -71,11 +71,11 @@ def print_density(sample):
     mu = np.mean(sample)
     sigma = np.std(sample)
 
-    x = np.linspace(mu - 3 * sigma, mu + 3 * sigma, 100)
-    y = 1 / (sigma * np.sqrt(2 * np.pi)) * np.exp(-(x - mu) ** 2 / (2 * sigma ** 2))
+    # x = np.linspace(mu - 3 * sigma, mu + 3 * sigma, 100)
+    # y = 1 / (sigma * np.sqrt(2 * np.pi)) * np.exp(-(x - mu) ** 2 / (2 * sigma ** 2))
 
-    plt.plot(x, y, label='Плотность распределения')
-    plt.hist(sample, density=True, bins=20, alpha=0.5, label='Выборка')
+    # plt.plot(x, y, label='Плотность распределения')
+    plt.hist(sample, density=True, bins=100, alpha=0.5, label='Выборка')
     plt.legend()
     plt.show()
 
@@ -92,7 +92,7 @@ def print_mixture_density(func, arrays, weights, left, right):
 
     plt.xlabel('x')
     plt.ylabel('Density')
-    plt.title('Mixture Density of n Normal Distributions')
+    plt.title(f'Mixture Density of {len(weights)} Normal Distributions')
 
     plt.legend()
     plt.show()

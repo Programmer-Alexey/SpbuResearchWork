@@ -36,7 +36,7 @@ class NormalDistribution:
         else:
             fill(self.ptr)
             self.ind = 1
-        return self.ptr.contents.values[:self.n][self.ind - 1]
+        return self.ptr.contents.values[self.ind - 1]
 
     def density(self, x):
         return 1 / (exp(((x - self.mu) / self.sigma) ** 2 / 2) * (2 * pi) ** 0.5 * self.sigma)
