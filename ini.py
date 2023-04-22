@@ -39,7 +39,8 @@ class NormalDistribution:
         return self.ptr.contents.values[self.ind - 1]
 
     def density(self, x):
-        return 1 / (exp(((x - self.mu) / self.sigma) ** 2 / 2) * (2 * pi) ** 0.5 * self.sigma)
+        k = 1/((2 * pi) ** 0.5 * self.sigma)
+        return exp(-(((x - self.mu) / self.sigma) ** 2) / 2) * k
 
 
 class Mixture:
