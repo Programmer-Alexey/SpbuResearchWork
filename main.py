@@ -103,8 +103,10 @@ mix = Mixture(*((distributions[j].density, weights[j]) for j in range(k)))
 mixture = mix.function
 
 # Исправил Функцию графика плотности смеси
-print_mixture_density(mixture, [distributions[u].data() for u in range(k)], weights, left, right)
+N = NormalDistribution(0, 1, 10000)
+print_distribution(metropolis_hastings(mixture, 5, 10000))
+
 
 # Оптимизация
 NUM_BINS = 50
-print(simulated_annealing_optimization(np.array([2]), MCMC_estimation, 10, 0.99, 500))
+#print(simulated_annealing_optimization(np.array([2]), MCMC_estimation, 10, 0.99, 500))
