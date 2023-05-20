@@ -30,7 +30,7 @@ class RandomGenerator:
         return self.values[index]
 
 
-def print_distribution(sample):
+def print_EDF(sample):
     plt.style.use('ggplot')
 
     # Сортируем выборку
@@ -58,22 +58,28 @@ def print_mixture_density(func, arrays, weights, left, right):
 
     plt.style.use('ggplot')
     plt.plot(x, np.vectorize(func)(x), label='Mixture Density')
-    plt.hist(np.array([arrays[rgen.generate()][i] for i in range(n)]), bins=50, density=True, label="Mixture Histogram")
+    plt.hist(np.array([arrays[rgen.generate()][i] for i in range(n)]), bins=max(80, n // 1000), density=True,
+             label="Mixture Histogram")
 
     plt.xlabel('x')
     plt.ylabel('Density')
-    plt.title(f'Mixture Density of {len(weights)} Normal Distributions')
+    plt.title(f'Mixture Density of {len(weights)} Distributions')
 
     plt.legend()
     plt.show()
 
 
-def print_density(func, sample):
+def print_density(func, sample, bins='auto'):
+    # Настройка количества интервалов
+    if bins == "auto":
+        bins = max(80, len(sample) // 1000)
+
     x = np.linspace(min(sample) - 1, max(sample) + 1, 1000)
 
     plt.style.use('ggplot')
-    plt.plot(x, np.vectorize(func)(x), label='Mixture Density')
-    plt.hist(np.array(sample), bins=100, density=True, label="Mixture Histogram")
+
+    plt.plot(x, np.vectorize(func)(x), label='Density')
+    plt.hist(np.array(sample), bins=bins, density=True, label="Function Histogram")
 
     plt.xlabel('x')
     plt.ylabel('Density')

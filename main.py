@@ -2,19 +2,23 @@ import random
 from ini import *
 from charts import *
 
-
 # print_mixture_density(mixture, [distributions[u].data() for u in range(k)], weights, left, right)
 # Алгоритм Метрополиса-Гастингса
+
 def metropolis_hastings(function, sigma, size):
     s = sum(weights)
     mean, std = 0, 1
     x0 = 0
 
+    # Выбор стартового положения
     for ind in range(k):
         x0 += weights[ind] / s * means[ind]
     sample = [x0]
 
+    # Генератор следующих чисел
     N = NormalDistribution(mean, sigma, 1000)
+
+    # От N1 и N2 нужны только функции плотности
     N1 = NormalDistribution(x0, sigma, 0)
     N2 = NormalDistribution(x0, sigma, 0)
 
@@ -24,7 +28,6 @@ def metropolis_hastings(function, sigma, size):
         N1.mu = x
 
         a = function(x) * N2.density(x) / (function(x0) * N1.density(x0))
-        # a = function(x) / function(x0)
         r = min(1, a)
 
         if random.random() < r:
@@ -32,51 +35,6 @@ def metropolis_hastings(function, sigma, size):
             N2.mu = x0
         sample.append(x0)
     return sample
-
-
-# Далее идут функция критерия Хи-квадрат и функция оптимизации
-
-def chi_square_agreement(observed_values, target_distribution_func, bin_edges):
-    observed_freq, _ = np.histogram(observed_values, bins=bin_edges)
-    observed_prob = observed_freq / len(observed_values)
-
-    bin_centers = [(bin_edges[i] + bin_edges[i + 1]) / 2 for i in range(len(bin_edges) - 1)]
-    expected_prob = [target_distribution_func(x) for x in bin_centers]
-
-    chi_square_statistic = sum((observed_prob - expected_prob) ** 2 / expected_prob)
-
-    return chi_square_statistic
-
-
-def MCMC_estimation(v):
-    sigma = v[0]
-    sample = metropolis_hastings(mixture, sigma, n)
-    return chi_square_agreement(sample, mixture, np.linspace(left, right, NUM_BINS + 1))
-
-
-def simulated_annealing_optimization(start, fitness, temperature, alpha, iters):
-    current = start
-    best_state = current
-
-    for i in range(iters):
-        next = current + np.random.uniform(-1, 1)
-        while next <= 0:
-            next = current + np.random.uniform(-1, 1)
-
-        current_energy = fitness(current)
-        neighbor_energy = fitness(next)
-
-        delta = neighbor_energy - current_energy
-
-        if delta < 0 or np.random.rand() < np.exp(-delta / temperature):
-            current = next
-
-        if fitness(current) < fitness(best_state):
-            best_state = current
-
-        temperature *= alpha
-
-    return best_state
 
 
 n = 10000
@@ -101,12 +59,62 @@ for j in range(k):
 
 mix = Mixture(*((distributions[j].density, weights[j]) for j in range(k)))
 mixture = mix.function
+def get_ar(function, sigma, size):
+    count = 0
+    s = sum(weights)
+    mean, std = 0, 1
+    x0 = 0
 
-# Исправил Функцию графика плотности смеси
-N = NormalDistribution(0, 1, 10000)
-print_distribution(metropolis_hastings(mixture, 5, 10000))
+    # Выбор стартового положения
+    for ind in range(k):
+        x0 += weights[ind] / s * means[ind]
+
+    # Генератор следующих чисел
+    N = NormalDistribution(mean, sigma, 1000)
+
+    # От N1 и N2 нужны только функции плотности
+    N1 = NormalDistribution(x0, sigma, 0)
+    N2 = NormalDistribution(x0, sigma, 0)
+
+    for iteration in range(size):
+
+        x = x0 + N.generate()
+        N1.mu = x
+
+        a = function(x) * N2.density(x) / (function(x0) * N1.density(x0))
+        r = min(1, a)
+
+        if random.random() < r:
+            x0 = x
+            N2.mu = x0
+            count += 1
+    return count / size
+
+def optimal_sigma(accept):
+    AR = 0
+    epsilon = 0.001
+    sigma_left, sigma_right = 0, 80
+    sigma = 0
+
+    while abs(AR - accept) > epsilon:
+        sigma = (sigma_left + sigma_right) / 2
+        AR = get_ar(mixture, sigma, 10000)
+        if AR > accept:
+            sigma_left = sigma
+        else:
+            sigma_right = sigma
+    return sigma
 
 
-# Оптимизация
-NUM_BINS = 50
-#print(simulated_annealing_optimization(np.array([2]), MCMC_estimation, 10, 0.99, 500))
+#print_EDF(s)
+# print_mixture_density(mixture, [distributions[u].data() for u in range(k)], weights, left, right)
+accept = 0.5
+"""while accept <= 0.4:
+    sigma = optimal_sigma(accept)
+    s = metropolis_hastings(mixture, sigma, 10000)
+    print(accept, sigma)
+    print_density(mixture, s)
+    accept += 0.1"""
+sigma = optimal_sigma(accept)
+s = metropolis_hastings(mixture, sigma, 10000)
+print_density(mixture, s)
